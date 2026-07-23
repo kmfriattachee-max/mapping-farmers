@@ -1,0 +1,9 @@
+Add map pins, enhanced popups, and gender field; add .gitignore and README
+
+Short description:
+- SVG pin markers colored by county
+- Popup improvements and profile navigation
+- `gender` field added end-to-end (UI, server, DB awareness)
+- `.gitignore` and `README.md` added
+
+Adjust message if you want to split these into smaller commits.

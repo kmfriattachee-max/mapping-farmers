@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fish Farmers Map</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <aside id="sidebar" class="sidebar collapsed" aria-hidden="false">
+    <button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle navigation">☰</button>
+    <nav class="sidebar-nav">
+      <a class="side-link" data-target="#map-tab" href="#map-tab">Map</a>
+      <a class="side-link" data-target="#register-tab" href="#register-tab">Register</a>
+      <a class="side-link" data-target="#marketplace-tab" href="#marketplace-tab">Marketplace</a>
+      <a class="side-link" data-target="#resources-tab" href="#resources-tab">Resources</a>
+      <a class="side-link" data-target="#farmers-tab" href="#farmers-tab">Farmers</a>
+      <a class="side-link" data-target="#admin-tab" href="#admin-tab">Admin</a>
+      <a class="side-link" data-target="#" href="/">Home</a>
+    </nav>
+  </aside>
+  <header>
+    <div class="header-top">
+      <h1>Smart Aquaculture GIS Platform</h1>
+      <a href="/" class="secondary-button back-link">Back to Landing</a>
+    </div>
+    <p>Click a marker to view farmer details, or register your farm below.</p>
+    <div class="public-stats" style="display:flex;gap:12px;flex-wrap:wrap;margin:12px 0;">
+      <div class="card" style="min-width:160px;flex:1;display:flex;flex-direction:column;align-items:center;padding:12px;">
+        <div style="font-size:1.6rem;font-weight:700;color:#1976d2;" id="total-farms">0</div>
+        <div style="margin-top:6px;color:#374151;">Farmers</div>
+      </div>
+      <div class="card" style="min-width:160px;flex:1;display:flex;flex-direction:column;align-items:center;padding:12px;">
+        <div style="font-size:1.6rem;font-weight:700;color:#16a34a;" id="total-suppliers">0</div>
+        <div style="margin-top:6px;color:#374151;">Suppliers / Hatcheries</div>
+      </div>
+      <div class="card" style="min-width:160px;flex:1;display:flex;flex-direction:column;align-items:center;padding:12px;">
+        <div style="font-size:1.6rem;font-weight:700;color:#8b5cf6;" id="hatcheries-registered">0</div>
+        <div style="margin-top:6px;color:#374151;">Hatcheries</div>
+      </div>
+      <div class="card" style="min-width:160px;flex:1;display:flex;flex-direction:column;align-items:center;padding:12px;">
+        <div style="font-size:1.6rem;font-weight:700;color:#06b6d4;" id="total-ponds">0</div>
+        <div style="margin-top:6px;color:#374151;">Ponds</div>
+      </div>
+      <div class="card" style="min-width:160px;flex:1;display:flex;flex-direction:column;align-items:center;padding:12px;">
+        <div style="font-size:1.6rem;font-weight:700;color:#fb923c;" id="markets-registered">0</div>
+        <div style="margin-top:6px;color:#374151;">Markets</div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <nav class="tab-nav" aria-label="Primary application tabs">
+      <button class="tab-button" data-target="map-tab">Map</button>
+      <button class="tab-button" data-target="register-tab">Register</button>
+      <button class="tab-button" data-target="marketplace-tab">Marketplace</button>
+      <button class="tab-button" data-target="resources-tab">Resources</button>
+      <button class="tab-button" data-target="farmers-tab">Farmers</button>
+      <button class="tab-button" data-target="admin-tab">Admin</button>
+    </nav>
+
+    <div class="tab-content">
+      <section id="map-tab" class="tab-panel">
+        <div class="map-panel">
+          <div class="map-toolbar" style="position:absolute;z-index:650;top:12px;left:12px;">
+            <button id="show-layer-controls" class="secondary-button">Layers</button>
+            <div id="layer-controls" class="hidden" style="margin-top:8px;background:#fff;border-radius:6px;padding:8px;box-shadow:0 4px 14px rgba(0,0,0,0.12);">
+              <div style="display:flex;flex-direction:column;gap:6px;min-width:180px;">
+                <button class="layer-toggle" data-layer="farmers">Toggle Farmers</button>
+                <button class="layer-toggle" data-layer="rivers">Toggle Rivers</button>
+                <button class="layer-toggle" data-layer="water_sources">Toggle Water Sources</button>
+                <button class="layer-toggle" data-layer="markets">Toggle Markets</button>
+                <button class="layer-toggle" data-layer="hatcheries">Toggle Hatcheries</button>
+                <button class="layer-toggle" data-layer="feed_suppliers">Toggle Feed Suppliers</button>
+                <button class="layer-toggle" data-layer="equipment_suppliers">Toggle Equipment Suppliers</button>
+                <button class="layer-toggle" data-layer="roads">Toggle Roads</button>
+                <button class="layer-toggle" data-layer="footprints">Toggle Footprints</button>
+                <button class="layer-toggle" data-layer="satellite">Toggle Satellite</button>
+              </div>
+            </div>
+          </div>
+          <div id="map"></div>
+        </div>
+      </section>
+
+      <section id="register-tab" class="tab-panel">
+        <div class="card">
+          <h2>Register a Farmer</h2>
+          <form id="farmer-form">
+            <label for="name">Name</label>
+            <input id="name" name="name" type="text" placeholder="Farmer name" required />
+
+            <label for="county">County</label>
+            <select id="county" name="county" required>
+              <option value="">Select county</option>
+              <option value="Kisii">Kisii</option>
+              <option value="Nyamira">Nyamira</option>
+              <option value="Homa Bay">Homa Bay</option>
+              <option value="Kisumu">Kisumu</option>
+              <option value="Migori">Migori</option>
+              <option value="Kericho">Kericho</option>
+              <option value="Narok">Narok</option>
+              <option value="Bomet">Bomet</option>
+            </select>
+
+            <label for="gender">Gender</label>
+            <select id="gender" name="gender" required>
+              <option value="">Select gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+
+            <label for="latitude">Latitude</label>
+            <input id="latitude" name="latitude" type="number" step="0.000001" placeholder="e.g. -0.670" required />
+
+            <label for="longitude">Longitude</label>
+            <input id="longitude" name="longitude" type="number" step="0.000001" placeholder="e.g. 34.770" required />
+            <p class="hint">Tip: click a point on the map to fill latitude and longitude automatically.</p>
+            <div id="location-source" class="hint" style="margin-top:6px; font-weight:600; color:#1f2937;"></div>
+
+            <div class="card map-card">
+              <label>Pick location on map</label>
+              <div id="login-map"></div>
+              <div class="map-card-actions">
+                <button id="locate-me" type="button" class="secondary-button">Use my location</button>
+              </div>
+              <p class="hint">Click the map or press “Use my location” to fill latitude and longitude.</p>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Fish Species Farmed <span class="req">*</span></label>
+              <div class="checkbox-grid" id="speciesGrid">
+                <label class="checkbox-item"><input type="checkbox" name="species" value="Tilapia"> 🐟 Tilapia</label>
+                <label class="checkbox-item"><input type="checkbox" name="species" value="Catfish"> 🐠 Catfish</label>
+                <label class="checkbox-item"><input type="checkbox" name="species" value="Trout"> 🎣 Trout</label>
+                <label class="checkbox-item"><input type="checkbox" name="species" value="Carp"> 🐡 Common Carp</label>
+                <label class="checkbox-item"><input type="checkbox" name="species" value="Nile Perch"> 🦈 Nile Perch</label>
+                <label class="checkbox-item"><input type="checkbox" name="species" value="Mudfish"> Mudfish</label>
+                <label class="checkbox-item"><input type="checkbox" name="species" value="Bass"> 🎏 Bass</label>
+                <label class="checkbox-item"><input type="checkbox" name="species" value="Other"> + Other</label>
+              </div>
+              <div id="species-error" class="form-error" aria-live="polite"></div>
+            </div>
+
+            <label for="culture_system">Culture System</label>
+            <select id="culture_system" name="culture_system" required>
+              <option value="">Select culture system</option>
+              <option value="Pond">Pond</option>
+              <option value="Tank">Tank</option>
+              <option value="Cage">Cage</option>
+              <option value="Recirculating system">Recirculating system</option>
+            </select>
+
+            <label for="production_scale">Production Scale</label>
+            <select id="production_scale" name="production_scale">
+              <option value="">Select scale (optional)</option>
+              <option value="Small">Small</option>
+              <option value="Medium">Medium</option>
+              <option value="Large">Large</option>
+            </select>
+
+            <label for="equipment">Equipment (add multiple)</label>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <input id="equipment-input" type="text" placeholder="e.g. Pumps, Feeds, Nets" style="flex:1;" />
+              <button id="add-equipment" type="button" class="secondary-button">Add</button>
+            </div>
+            <ul id="equipment-list" style="margin:8px 0 0;padding-left:18px;"></ul>
+            <input id="equipment-hidden" name="equipment" type="hidden" />
+
+            <label for="image">Farmer image</label>
+            <input id="image" name="image" type="file" accept="image/*" />
+
+            <label for="contact">Contact</label>
+            <input id="contact" name="contact" type="text" placeholder="Phone or email" />
+
+            <button type="submit">Register Farmer</button>
+            <p class="status" id="status"></p>
+          </form>
+        </div>
+      </section>
+
+      <section id="farmers-tab" class="tab-panel">
+        <div class="card">
+          <h2>Registered Farmers</h2>
+          <div class="filter-grid">
+            <div class="filter-item">
+              <label for="county-filter">County</label>
+              <select id="county-filter">
+                <option value="">All counties</option>
+                <option value="Kisii">Kisii</option>
+                <option value="Nyamira">Nyamira</option>
+                <option value="Homa Bay">Homa Bay</option>
+                <option value="Kisumu">Kisumu</option>
+                <option value="Migori">Migori</option>
+                <option value="Kericho">Kericho</option>
+                <option value="Narok">Narok</option>
+                <option value="Bomet">Bomet</option>
+              </select>
+            </div>
+            <div class="filter-item">
+              <label for="species-filter">Species</label>
+              <select id="species-filter">
+                <option value="">All species</option>
+                <option value="Tilapia">Tilapia</option>
+                <option value="Catfish">Catfish</option>
+                <option value="Trout">Trout</option>
+                <option value="Ornamental fish">Ornamental fish</option>
+              </select>
+            </div>
+            <div class="filter-item">
+              <label for="culture-filter">Culture System</label>
+              <select id="culture-filter">
+                <option value="">All systems</option>
+                <option value="Pond">Pond</option>
+                <option value="Tank">Tank</option>
+                <option value="Cage">Cage</option>
+                <option value="Recirculating system">Recirculating system</option>
+              </select>
+            </div>
+            <div class="filter-item">
+              <label for="scale-filter">Production Scale</label>
+              <select id="scale-filter">
+                <option value="">All scales</option>
+                <option value="Small">Small</option>
+                <option value="Medium">Medium</option>
+                <option value="Large">Large</option>
+              </select>
+            </div>
+            <div class="filter-item">
+              <label for="status-filter">Approval Status</label>
+              <select id="status-filter">
+                <option value="all">All statuses</option>
+                <option value="approved">Approved</option>
+                <option value="pending">Pending approval</option>
+              </select>
+            </div>
+            <div class="filter-item">
+              <label for="date-filter">Registration Date</label>
+              <select id="date-filter">
+                <option value="">Anytime</option>
+                <option value="today">Today</option>
+                <option value="this-month">This month</option>
+                <option value="this-year">This year</option>
+              </select>
+            </div>
+            <div class="filter-item filter-search full-width">
+              <label for="search-filter">Search farmers</label>
+              <input id="search-filter" type="search" placeholder="Search by name, species, county, or culture system" />
+            </div>
+          </div>
+          <div class="filter-actions">
+            <button id="clear-filter" type="button" class="secondary-button">Reset filters</button>
+            <button id="export-data" type="button" class="secondary-button">Download farmer data</button>
+          </div>
+          <ul id="farmer-list"></ul>
+        </div>
+
+        <div class="card detail-panel">
+          <h2>Farmer details</h2>
+          <div id="detail-content">
+            <p>Select a farmer from the list or map to view details, approve the registration, and see uploaded images.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="marketplace-tab" class="tab-panel">
+        <div class="card">
+          <h2>Marketplace — Suppliers & Hatcheries</h2>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px;">
+            <div style="min-width:180px;">
+              <label for="supplier-county-filter">County</label>
+              <select id="supplier-county-filter">
+                <option value="">All counties</option>
+                <option value="Kisii">Kisii</option>
+                <option value="Nyamira">Nyamira</option>
+                <option value="Homa Bay">Homa Bay</option>
+                <option value="Kisumu">Kisumu</option>
+                <option value="Migori">Migori</option>
+                <option value="Kericho">Kericho</option>
+                <option value="Narok">Narok</option>
+                <option value="Bomet">Bomet</option>
+              </select>
+            </div>
+            <div style="min-width:180px;">
+              <label for="supplier-species-filter">Species</label>
+              <select id="supplier-species-filter">
+                <option value="">All species</option>
+                <option value="Tilapia">Tilapia</option>
+                <option value="Catfish">Catfish</option>
+              </select>
+            </div>
+            <div style="min-width:180px;">
+              <label for="supplier-category-filter">Category</label>
+              <select id="supplier-category-filter">
+                <option value="">All categories</option>
+                <option value="Fingerlings">Fingerlings</option>
+                <option value="Feed">Feed</option>
+              </select>
+            </div>
+            <div style="flex:1;align-self: end;">
+              <button id="supplier-refresh" class="secondary-button">Refresh</button>
+            </div>
+          </div>
+          <ul id="supplier-list"></ul>
+        </div>
+      </section>
+
+      <section id="resources-tab" class="tab-panel">
+        <div class="card">
+          <h2>KMFRI Aquaculture Resource Hub</h2>
+          <p>One-stop portal for pond advisories, supplier directories, feed guidance, disease reporting, water quality monitoring, training, market intelligence, and fisheries officer support.</p>
+        </div>
+
+        <div class="card resource-section">
+          <h3>Knowledge Base</h3>
+          <input id="kb-search" type="search" placeholder="Search pond construction, water quality, stocking density, feeding, health management..." />
+          <div id="kb-results" class="resource-grid"></div>
+        </div>
+
+        <div class="card resource-section">
+          <h3>Frequently Asked Questions</h3>
+          <input id="faq-search" type="search" placeholder="Search FAQs" />
+          <div id="faq-list" class="faq-list"></div>
+        </div>
+
+        <div class="card resource-section two-column-grid">
+          <div>
+            <h3>Ask an Expert</h3>
+            <form id="expert-form">
+              <label for="expert-name">Name</label>
+              <input id="expert-name" name="name" type="text" placeholder="Your full name" required />
+              <label for="expert-contact">Phone or email</label>
+              <input id="expert-contact" name="contact" type="text" placeholder="Phone or email" required />
+              <label for="expert-topic">Topic</label>
+              <select id="expert-topic" name="topic">
+                <option>Water quality management</option>
+                <option>Pond preparation</option>
+                <option>Stocking density</option>
+                <option>Feeding schedules</option>
+                <option>Fish health management</option>
+                <option>Harvesting and post-harvest</option>
+              </select>
+              <label for="expert-question">Question</label>
+              <textarea id="expert-question" name="question" rows="4" placeholder="Describe your challenge" required></textarea>
+              <button type="submit">Send to KMFRI</button>
+              <p id="expert-status" class="hint"></p>
+            </form>
+          </div>
+          <div>
+            <h3>Feed Recommendation</h3>
+            <div class="feed-calculator">
+              <label for="feed-species">Species</label>
+              <select id="feed-species">
+                <option>Tilapia</option>
+                <option>Catfish</option>
+                <option>Nile Perch</option>
+                <option>Trout</option>
+              </select>
+              <label for="feed-age">Age (months)</label>
+              <input id="feed-age" type="number" min="1" value="3" />
+              <label for="feed-weight">Average weight (g)</label>
+              <input id="feed-weight" type="number" min="10" value="300" />
+              <button id="calc-feed" type="button">Calculate</button>
+              <div id="feed-recommendation" class="feed-summary"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card resource-section two-column-grid">
+          <div>
+            <h3>Disease Reporting</h3>
+            <form id="disease-form">
+              <label for="disease-name">Name</label>
+              <input id="disease-name" name="name" type="text" placeholder="Farmer or farm name" required />
+              <label for="disease-contact">Contact</label>
+              <input id="disease-contact" name="contact" type="text" placeholder="Phone or email" />
+              <label for="disease-symptoms">Symptoms observed</label>
+              <textarea id="disease-symptoms" name="symptoms" rows="3" placeholder="Describe what you observed" required></textarea>
+              <label for="disease-quantity">Estimated mortalities</label>
+              <input id="disease-quantity" name="quantity" type="number" min="0" placeholder="Number of fish affected" />
+              <button type="submit">Submit report</button>
+              <p id="disease-status" class="hint"></p>
+            </form>
+            <div id="disease-report-list" class="resource-list" style="margin-top:16px;"></div>
+          </div>
+          <div>
+            <h3>Water Quality Monitoring</h3>
+            <form id="water-form">
+              <label for="water-ph">pH</label>
+              <input id="water-ph" name="ph" type="number" step="0.1" min="0" max="14" placeholder="6.5" required />
+              <label for="water-temp">Temperature (°C)</label>
+              <input id="water-temp" name="temperature" type="number" step="0.1" placeholder="26" required />
+              <label for="water-do">Dissolved Oxygen (mg/L)</label>
+              <input id="water-do" name="do" type="number" step="0.1" placeholder="5.0" required />
+              <label for="water-ammonia">Ammonia (mg/L)</label>
+              <input id="water-ammonia" name="ammonia" type="number" step="0.1" placeholder="0.1" required />
+              <label for="water-turbidity">Turbidity (NTU)</label>
+              <input id="water-turbidity" name="turbidity" type="number" step="1" placeholder="15" required />
+              <button type="submit">Record reading</button>
+              <p id="water-status" class="hint"></p>
+            </form>
+            <div id="water-quality-history" class="resource-list" style="margin-top:16px;"></div>
+          </div>
+        </div>
+
+        <div class="card resource-section">
+          <h3>Latest Training, Events & Publications</h3>
+          <div class="resource-card-grid">
+            <div>
+              <h4>Upcoming trainings</h4>
+              <ul id="events-list" class="resource-list"></ul>
+            </div>
+            <div>
+              <h4>Research publications</h4>
+              <ul id="publication-list" class="resource-list"></ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="card resource-section two-column-grid">
+          <div>
+            <h3>Market Intelligence</h3>
+            <table class="market-table">
+              <thead><tr><th>Market</th><th>Tilapia</th><th>Catfish</th></tr></thead>
+              <tbody id="market-table-body"></tbody>
+            </table>
+          </div>
+          <div>
+            <h3>Fisheries Officers Directory</h3>
+            <div id="officer-directory" class="resource-list"></div>
+          </div>
+        </div>
+
+        <div class="card resource-section">
+          <h3>Equipment Supplier Directory</h3>
+          <p>Locate suppliers of aerators, pumps, tanks, nets and water testing kits.</p>
+          <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px;flex-wrap:wrap;">
+            <div style="flex:1;min-width:200px;">
+              <label for="equipment-supplier-search">Search equipment suppliers</label>
+              <input id="equipment-supplier-search" type="search" placeholder="Search by vendor, product, or county" />
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <input id="equipment-verified-only" type="checkbox" />
+              <label for="equipment-verified-only" style="margin:0;white-space:nowrap;">Verified only</label>
+            </div>
+          </div>
+          <ul id="equipment-supplier-list" class="resource-list"></ul>
+        </div>
+      </section>
+
+      <section id="admin-tab" class="tab-panel">
+        <div id="admin-login-section" class="card admin-panel">
+          <h2>Administrator Login</h2>
+          <label for="admin-username">Username</label>
+          <input id="admin-username" type="text" placeholder="Admin username" />
+          <label for="admin-password">Password</label>
+          <input id="admin-password" type="password" placeholder="Admin password" />
+          <div style="margin-top:8px;display:flex;align-items:center;gap:8px;">
+            <input id="admin-show-password" type="checkbox" />
+            <label for="admin-show-password" style="margin:0;">Show password</label>
+          </div>
+          <div class="admin-actions">
+            <button id="admin-login" type="button" class="primary-button">Login</button>
+          </div>
+          <p id="admin-status" class="hint">Not authenticated</p>
+        </div>
+
+        <div id="admin-dashboard-section" class="hidden">
+          <!-- ADMIN HEADER & LOGOUT -->
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+            <h2>Administrator Dashboard</h2>
+            <div>
+              <span id="admin-welcome" style="font-weight: 600; color: #1976d2; margin-right: 16px;"></span>
+              <button id="admin-logout" type="button" class="secondary-button">Logout</button>
+            </div>
+          </div>
+
+          <div class="card" style="margin-bottom:16px;">
+            <h3>Landing Page Image</h3>
+            <p class="hint">Preview and update the landing page background image shown on the home screen.</p>
+            <div style="display:flex; gap:12px; align-items:center;">
+              <img id="landing-preview" src="/uploads/landing-bg.jpg" alt="Landing preview" style="width:160px; height:100px; object-fit:cover; border-radius:8px; border:1px solid #ddd;">
+              <div style="flex:1;">
+                <input id="landing-image-input" type="file" accept="image/*">
+                <div style="display:flex; gap:8px; margin-top:8px; align-items:center;">
+                  <button id="upload-landing-btn" class="secondary-button" type="button">Upload image</button>
+                  <button id="apply-landing-btn" class="secondary-button" type="button" disabled>Apply to landing</button>
+                  <button id="reset-landing-btn" class="secondary-button" type="button">Reset preview</button>
+                </div>
+                <div style="margin-top:8px;">
+                  <label style="font-size:0.9rem;display:inline-flex;align-items:center;gap:8px;">
+                    <input id="auto-apply-checkbox" type="checkbox" /> Auto-apply after upload
+                  </label>
+                </div>
+                <p id="landing-upload-status" class="hint"></p>
+              </div>
+            </div>
+          </div>
+
+          <!-- ANALYTICS CARDS -->
+          <div class="admin-metrics-grid">
+            <div class="admin-metric-card">
+              <div class="metric-number" id="metric-total">0</div>
+              <div class="metric-label">Total Farmers</div>
+            </div>
+            <div class="admin-metric-card approved">
+              <div class="metric-number" id="metric-approved">0</div>
+              <div class="metric-label">Approved</div>
+            </div>
+            <div class="admin-metric-card pending">
+              <div class="metric-number" id="metric-pending">0</div>
+              <div class="metric-label">Pending Review</div>
+            </div>
+            <div class="admin-metric-card">
+              <div class="metric-number" id="metric-kisii">0</div>
+              <div class="metric-label">Kisii County</div>
+            </div>
+            <div class="admin-metric-card">
+              <div class="metric-number" id="metric-nyamira">0</div>
+              <div class="metric-label">Nyamira County</div>
+            </div>
+            <div class="admin-metric-card">
+              <div class="metric-number" id="metric-homabay">0</div>
+              <div class="metric-label">Homa Bay County</div>
+            </div>
+          </div>
+
+          <!-- STATISTICS SECTION -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin-top: 24px;">
+            <div class="card">
+              <h3>Top Species Farmed</h3>
+              <div id="top-species-list" style="display: flex; flex-direction: column; gap: 12px;"></div>
+            </div>
+            <div class="card">
+              <h3>Culture Systems</h3>
+              <div id="culture-systems-list" style="display: flex; flex-direction: column; gap: 12px;"></div>
+            </div>
+          </div>
+
+          <!-- FARMER MANAGEMENT TABLE -->
+          <div class="card" style="margin-top: 24px;">
+            <h3>Farmer Management</h3>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 16px;">
+              <div>
+                <label for="admin-county-filter">County</label>
+                <select id="admin-county-filter">
+                  <option value="">All Counties</option>
+                  <option value="Kisii">Kisii</option>
+                  <option value="Nyamira">Nyamira</option>
+                  <option value="Homa Bay">Homa Bay</option>
+                  <option value="Kisumu">Kisumu</option>
+                  <option value="Migori">Migori</option>
+                  <option value="Kericho">Kericho</option>
+                  <option value="Narok">Narok</option>
+                  <option value="Bomet">Bomet</option>
+                </select>
+              </div>
+              <div>
+                <label for="admin-approval-filter">Status</label>
+                <select id="admin-approval-filter">
+                  <option value="">All</option>
+                  <option value="approved">Approved</option>
+                  <option value="pending">Pending</option>
+                </select>
+              </div>
+              <div>
+                <label for="admin-search-filter">Search</label>
+                <input id="admin-search-filter" type="search" placeholder="Name/Email/Phone" />
+              </div>
+              <div style="align-self: flex-end;">
+                <button id="admin-refresh-table" class="secondary-button">🔄 Refresh</button>
+              </div>
+            </div>
+
+            <div style="overflow-x: auto;">
+              <table id="admin-farmers-table" style="width: 100%; border-collapse: collapse;">
+                <thead>
+                  <tr style="background: #f5f5f5; border-bottom: 2px solid #ddd;">
+                    <th style="padding: 12px; text-align: left;">Name</th>
+                    <th style="padding: 12px; text-align: left;">Email</th>
+                    <th style="padding: 12px; text-align: left;">County</th>
+                    <th style="padding: 12px; text-align: left;">Species</th>
+                    <th style="padding: 12px; text-align: center;">Status</th>
+                    <th style="padding: 12px; text-align: center;">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-farmers-tbody">
+                  <tr><td colspan="6" style="padding: 20px; text-align: center;">Loading farmers...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="section-actions">
+            <button type="button" class="secondary-button prev-tab-btn" data-prev="farmer-dashboard-tab">Back to My Farm</button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+  
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
+  <script src="app.js"></script>
+  <!-- Apply confirmation modal -->
+  <div id="apply-confirm-modal" class="modal hidden" aria-hidden="true">
+    <div class="modal-content">
+      <h3>Apply landing image</h3>
+      <p>Apply the uploaded image to the landing page background now?</p>
+      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:12px;">
+        <button id="cancel-apply-btn" class="secondary-button">Cancel</button>
+        <button id="confirm-apply-btn" class="primary-button">Apply</button>
+      </div>
+    </div>
+  </div>
+  <!-- Toast container -->
+  <div id="toast-container" aria-live="polite" style="position:fixed;right:12px;bottom:18px;z-index:2400;pointer-events:none"></div>
+</body>
+</html>

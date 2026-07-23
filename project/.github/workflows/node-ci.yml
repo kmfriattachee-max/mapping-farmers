@@ -1,0 +1,30 @@
+name: Node CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linter (if present)
+        run: npm run lint --if-present
+
+      - name: Run tests (if present)
+        run: npm test --if-present
+
+      - name: Build (if present)
+        run: npm run build --if-present

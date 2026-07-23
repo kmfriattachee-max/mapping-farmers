@@ -1,0 +1,754 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KMFRI Fish Farmers Map</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1>KMFRI Fish Farmers Map</h1>
+    <p>Discover fish farmer locations, register new farms, and manage approvals across Kisii, Nyamira, and Homa Bay.</p>
+  </header>
+
+  <main>
+    <section class="landing-screen">
+      <div class="hero">
+        <div class="hero-copy">
+          <h1>Smart Aquaculture GIS Platform for Kenya</h1>
+          <p class="hero-sub">Mapping fish farmers, water resources, hatcheries, markets, and aquaculture opportunities across Kisii, Nyamira, and Homa Bay Counties.</p>
+          <div class="hero-ctas">
+            <button id="hero-explore" class="primary-button">Explore Map</button>
+            <button id="hero-register" class="secondary-button">Register Farm</button>
+            <button id="hero-dashboard" class="secondary-button" style="margin-left:8px;">View Dashboard</button>
+            <button id="hero-more" class="secondary-button" style="margin-left:8px;">Learn more</button>
+          </div>
+        </div>
+        <div class="hero-media">
+          <img id="hero-photo" src="/uploads/landing-bg.jpg" alt="Fish farmers" />
+        </div>
+      </div>
+
+      <div class="stats-section">
+        <div class="stats-grid">
+          <div class="stat-card"><div class="stat-icon">📍</div><div class="stat-value" id="landing-total-farms">0</div><div class="stat-label">Total Registered Farmers</div></div>
+          <div class="stat-card"><div class="stat-icon">🐟</div><div class="stat-value" id="landing-total-production">0</div><div class="stat-label">Total Fish Production</div></div>
+          <div class="stat-card"><div class="stat-icon">🏞</div><div class="stat-value" id="landing-counties-covered">0</div><div class="stat-label">Counties Covered</div></div>
+          <div class="stat-card"><div class="stat-icon">💧</div><div class="stat-value" id="landing-water-sources">0</div><div class="stat-label">Water Sources Mapped</div></div>
+          <div class="stat-card"><div class="stat-icon">🏭</div><div class="stat-value" id="landing-hatcheries">0</div><div class="stat-label">Hatcheries Registered</div></div>
+          <div class="stat-card"><div class="stat-icon">🛒</div><div class="stat-value" id="landing-markets">0</div><div class="stat-label">Fish Markets Registered</div></div>
+          <div class="stat-card"><div class="stat-icon">🚚</div><div class="stat-value" id="landing-feeds">0</div><div class="stat-label">Feed Suppliers</div></div>
+          <div class="stat-card"><div class="stat-icon">🗺</div><div class="stat-value" id="landing-gis-layers">0</div><div class="stat-label">GIS Layers Available</div></div>
+        </div>
+      </div>
+
+      <section class="overview-section">
+        <div class="card" style="max-width:1100px;margin:12px auto;padding:16px;">
+          <h3>Overview</h3>
+          <p>AquaMap Kenya is KMFRI's open aquaculture mapping platform — a lightweight GIS for registering farms, visualising water resources, and connecting farmers with hatcheries, markets and suppliers. The platform provides tools for county planning, farmer support, and simple analytics to inform decisions.</p>
+        </div>
+      </section>
+
+      <div class="features-preview">
+        <div class="features-col">
+          <h3>Platform Features</h3>
+          <div class="step-grid">
+            <div class="step-card"><strong>Farmer Registration</strong><p>Register and manage fish farms.</p></div>
+            <div class="step-card"><strong>GIS Mapping</strong><p>Visualize farms and aquaculture resources.</p></div>
+            <div class="step-card"><strong>Water Resource Analysis</strong><p>Identify nearby rivers and water sources.</p></div>
+            <div class="step-card"><strong>Buffer Analysis</strong><p>Find farms within specified distances of rivers.</p></div>
+            <div class="step-card"><strong>Market Intelligence</strong><p>Locate fish markets and buyers.</p></div>
+            <div class="step-card"><strong>Analytics Dashboard</strong><p>Generate reports and statistics.</p></div>
+            <div class="step-card"><strong>Production Monitoring</strong><p>Track production trends.</p></div>
+            <div class="step-card"><strong>Mobile Friendly</strong><p>Accessible on phones, tablets and desktops.</p></div>
+          </div>
+        </div>
+        <div class="map-preview">
+          <h4>Map Preview</h4>
+          <div id="mini-map" class="mini-map">(live map preview)</div>
+          <div style="margin-top:8px;"><button id="open-dashboard" class="secondary-button">Open Full GIS Map</button></div>
+        </div>
+      </div>
+
+      <div class="layers-section">
+        <h3>Aquaculture Layers</h3>
+        <div class="layers-grid">
+          <div class="layer"><strong>Fish Farms</strong><span>Farmer locations</span></div>
+          <div class="layer"><strong>Rivers</strong><span>Water resource mapping</span></div>
+          <div class="layer"><strong>Water Sources</strong><span>Boreholes, springs</span></div>
+          <div class="layer"><strong>Hatcheries</strong><span>Fingerling suppliers</span></div>
+          <div class="layer"><strong>Markets</strong><span>Fish selling points</span></div>
+          <div class="layer"><strong>Feed Suppliers</strong><span>Aquaculture inputs</span></div>
+          <div class="layer"><strong>Roads</strong><span>Accessibility analysis</span></div>
+          <div class="layer"><strong>Administrative Boundaries</strong><span>County & ward limits</span></div>
+        </div>
+      </div>
+
+      <div class="benefits-section">
+        <h3>Who benefits?</h3>
+        <div class="benefit-grid">
+          <div class="benefit-card"><strong>For Farmers</strong><p>Easier market access, better visibility, and resource discovery.</p></div>
+          <div class="benefit-card"><strong>For KMFRI</strong><p>Research data collection, aquaculture planning, and spatial analysis.</p></div>
+          <div class="benefit-card"><strong>For County Governments</strong><p>Policy support, resource allocation, and sector monitoring.</p></div>
+        </div>
+      </div>
+
+      <div class="why-section" style="max-width:1100px;margin:18px auto;padding:12px;">
+        <h3>Why this platform matters</h3>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;">
+          <div class="card"><strong>For Farmers</strong><ul><li>Easier market access</li><li>Better visibility</li><li>Resource discovery</li></ul></div>
+          <div class="card"><strong>For KMFRI</strong><ul><li>Research data collection</li><li>Aquaculture planning</li><li>Spatial analysis</li></ul></div>
+          <div class="card"><strong>For County Governments</strong><ul><li>Policy support</li><li>Resource allocation</li><li>Sector monitoring</li></ul></div>
+        </div>
+      </div>
+
+      <div style="text-align:center; margin:18px 0;">
+        <button id="landing-get-started" class="primary-button">Get Started</button>
+      </div>
+
+      <div class="counties-section">
+        <h3>Counties Covered</h3>
+        <div class="county-list">Kisii County • Nyamira County • Homa Bay County</div>
+      </div>
+
+      <div class="insights-section">
+        <h3>Latest Insights</h3>
+        <ul>
+          <li>New farms registered — 12 this week</li>
+          <li>Most farmed species — Tilapia</li>
+          <li>County production trends updated</li>
+        </ul>
+      </div>
+
+      <div class="cta-section">
+        <h2>Join Kenya's Digital Aquaculture Network</h2>
+        <div class="hero-ctas">
+          <button id="cta-register" class="primary-button">Register Your Farm</button>
+          <button id="cta-explore" class="secondary-button">Explore GIS Map</button>
+          <button id="cta-contact" class="secondary-button">Contact KMFRI</button>
+        </div>
+      </div>
+
+      <footer class="landing-footer">
+        <div class="footer-grid">
+          <div>
+            <h4>About AquaMap Kenya</h4>
+            <p>Smart Aquaculture GIS developed by KMFRI to support farmers and county planning.</p>
+          </div>
+          <div>
+            <h4>Contact</h4>
+            <p>Email: info@kmfri.go.ke<br>Phone: +254 700 000000</p>
+          </div>
+          <div>
+            <h4>Resources</h4>
+            <p><a href="#">GIS Resources</a><br><a href="#">Reports</a></p>
+          </div>
+        </div>
+      </footer>
+    </section>
+
+    <nav class="tab-nav hidden" aria-label="Primary application tabs">
+      <button class="tab-button" data-target="map-tab">Map</button>
+      <button class="tab-button" data-target="register-tab">Register</button>
+      <button class="tab-button" data-target="farmers-tab">Farmers</button>
+      <button class="tab-button" data-target="supplier-marketplace-tab">Supplier Marketplace</button>
+      <button class="tab-button" data-target="farmer-dashboard-tab">My Farm</button>
+      <button class="tab-button" data-target="admin-tab">Admin</button>
+    </nav>
+
+    <div class="tab-content hidden">
+      <section id="map-tab" class="tab-panel">
+        <div class="analytics-grid" id="analytics-cards">
+          <div class="analytics-card">
+            <div class="analytics-icon">📍</div>
+            <div class="analytics-value" id="total-farms">0</div>
+            <div class="analytics-label">Total Farms</div>
+          </div>
+          <div class="analytics-card">
+            <div class="analytics-icon">🐟</div>
+            <div class="analytics-value" id="total-species">0</div>
+            <div class="analytics-label">Fish Species</div>
+          </div>
+          <div class="analytics-card">
+            <div class="analytics-icon">🏞</div>
+            <div class="analytics-value" id="counties-covered">0</div>
+            <div class="analytics-label">Counties Covered</div>
+          </div>
+          <div class="analytics-card">
+            <div class="analytics-icon">💧</div>
+            <div class="analytics-value" id="water-sources-mapped">0</div>
+            <div class="analytics-label">Water Sources Mapped</div>
+          </div>
+          <div class="analytics-card">
+            <div class="analytics-icon">🏭</div>
+            <div class="analytics-value" id="hatcheries-registered">0</div>
+            <div class="analytics-label">Hatcheries Registered</div>
+          </div>
+          <div class="analytics-card">
+            <div class="analytics-icon">🛒</div>
+            <div class="analytics-value" id="markets-registered">0</div>
+            <div class="analytics-label">Markets Registered</div>
+          </div>
+        </div>
+        <div class="map-panel">
+          <div id="map"></div>
+          <div id="layer-controls" class="map-controls">
+            <h4>Smart GIS Layers</h4>
+            <p class="layer-help">Tap each layer button to show or hide that layer on the map.</p>
+            <div class="layer-button-grid">
+              <button type="button" class="layer-toggle active" data-layer="farmers">🟢 Fish Farmers</button>
+              <button type="button" class="layer-toggle" data-layer="density">🔥 Density Heatmap</button>
+              <button type="button" class="layer-toggle active" data-layer="water_sources">💧 Water Sources</button>
+              <button type="button" class="layer-toggle active" data-layer="rivers">🌊 Rivers</button>
+                <div style="grid-column: 1 / -1; display:flex; gap:8px; align-items:center;">
+                  <label for="river-buffer-distance" style="margin:0; font-weight:700;">River buffer (m):</label>
+                  <input id="river-buffer-distance" type="number" min="10" step="10" value="100" style="width:120px; padding:8px; border-radius:8px; border:1px solid rgba(16,42,67,0.08);">
+                  <button id="show-river-buffer" type="button" class="secondary-button">Show River Buffer</button>
+                  <button id="clear-river-buffer" type="button" class="secondary-button">Clear Buffer</button>
+                </div>
+                <div style="grid-column: 1 / -1; display:flex; gap:8px; align-items:center; margin-top:8px;">
+                  <label style="display:flex;align-items:center;gap:6px"><input id="limit-to-extent" type="checkbox"> Limit to map extent</label>
+                  <label style="display:flex;align-items:center;gap:6px"><input id="dissolve-buffers" type="checkbox"> Dissolve buffers</label>
+                </div>
+                <p class="hint" style="grid-column:1 / -1; margin-top:8px; font-size:0.9rem;">
+                  Note: Buffer distances are interpreted in meters but computed on geographic coordinates (WGS84). For large distances or high-accuracy needs, consider server-side reprojection or PostGIS/ST_Buffer for meter-accurate results.
+                </p>
+              <button type="button" class="layer-toggle" data-layer="markets">🛒 Fish Markets</button>
+              <button type="button" class="layer-toggle active" data-layer="hatcheries">🐣 Hatcheries</button>
+              <button type="button" class="layer-toggle" data-layer="feed_suppliers">🌾 Feed Suppliers</button>
+              <button type="button" class="layer-toggle active" data-layer="roads">🛣 Road Network</button>
+              <button type="button" class="layer-toggle" data-layer="suppliers">🏪 Supplier Marketplace</button>
+            </div>
+          </div>
+          <button id="show-layer-controls" class="layer-display-button hidden" type="button">Show map layers</button>
+        </div>
+        <div class="section-actions">
+          <button type="button" class="secondary-button next-tab-btn" data-next="register-tab">Continue to Register</button>
+        </div>
+      </section>
+
+      <section id="register-tab" class="tab-panel">
+        <div class="card">
+          <h2>Register a Farmer</h2>
+          <form id="farmer-form">
+            <label for="name">Name</label>
+            <input id="name" name="name" type="text" placeholder="Farmer name" required />
+
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" placeholder="Farmer email" required />
+
+            <label for="phone">Phone</label>
+            <input id="phone" name="phone" type="tel" placeholder="Farmer phone" required />
+
+            <label for="password">Password</label>
+            <input id="password" name="password" type="password" placeholder="Create a password" required />
+
+            <label for="county">County</label>
+            <select id="county" name="county" required>
+              <option value="">Select county</option>
+              <option value="Kisii">Kisii</option>
+              <option value="Nyamira">Nyamira</option>
+              <option value="Homa Bay">Homa Bay</option>
+            </select>
+
+            <label for="latitude">Latitude</label>
+            <input id="latitude" name="latitude" type="number" step="0.000001" placeholder="e.g. -0.670" required />
+
+            <label for="longitude">Longitude</label>
+            <input id="longitude" name="longitude" type="number" step="0.000001" placeholder="e.g. 34.770" required />
+            <p class="hint">Tip: click a point on the map to fill latitude and longitude automatically.</p>
+
+            <div class="card map-card">
+              <label>Pick location on map</label>
+              <div id="login-map"></div>
+              <div class="map-card-actions">
+                <button id="locate-me" type="button" class="secondary-button">Use my location</button>
+              </div>
+              <p class="hint">Click the map or press “Use my location” to fill latitude and longitude.</p>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Fish Species Farmed <span class="req">*</span></label>
+              <div class="checkbox-grid" id="speciesGrid">
+                <label class="checkbox-item"><input type="checkbox" name="species" value="Tilapia"> 🐟 Tilapia</label>
+                <label class="checkbox-item"><input type="checkbox" name="species" value="Catfish"> 🐠 Catfish</label>
+                <label class="checkbox-item"><input type="checkbox" name="species" value="Trout"> 🎣 Trout</label>
+                <label class="checkbox-item"><input type="checkbox" name="species" value="Carp"> 🐡 Common Carp</label>
+                <label class="checkbox-item"><input type="checkbox" name="species" value="Nile Perch"> 🦈 Nile Perch</label>
+                <label class="checkbox-item"><input type="checkbox" name="species" value="Mudfish"> Mudfish</label>
+                <label class="checkbox-item"><input type="checkbox" name="species" value="Bass"> 🎏 Bass</label>
+                <label class="checkbox-item"><input type="checkbox" name="species" value="Other"> + Other</label>
+              </div>
+              <div id="species-error" class="form-error" aria-live="polite"></div>
+            </div>
+
+            <label for="culture_system">Culture System</label>
+            <select id="culture_system" name="culture_system" required>
+              <option value="">Select culture system</option>
+              <option value="Pond">Pond</option>
+              <option value="Tank">Tank</option>
+              <option value="Cage">Cage</option>
+              <option value="Recirculating system">Recirculating system</option>
+            </select>
+
+            <label for="production_scale">Production Scale</label>
+            <select id="production_scale" name="production_scale">
+              <option value="">Select scale (optional)</option>
+              <option value="Small">Small</option>
+              <option value="Medium">Medium</option>
+              <option value="Large">Large</option>
+            </select>
+
+            <label for="equipment">Equipment</label>
+            <input id="equipment" name="equipment" type="text" placeholder="Equipment details" />
+
+            <label for="image">Farmer image</label>
+            <input id="image" name="image" type="file" accept="image/*" />
+
+            <label for="contact">Contact</label>
+            <input id="contact" name="contact" type="text" placeholder="Phone or email" />
+
+            <button type="submit">Register Farmer</button>
+            <p class="status" id="status"></p>
+          </form>
+          <div class="section-actions">
+            <button type="button" class="secondary-button prev-tab-btn" data-prev="map-tab">Back to Map</button>
+            <button type="button" class="secondary-button next-tab-btn" data-next="farmers-tab">Continue to Farmer Directory</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="farmers-tab" class="tab-panel">
+        <div class="card">
+          <h2>Registered Farmers</h2>
+          <div class="filter-grid">
+            <div class="filter-item">
+              <label for="county-filter">County</label>
+              <select id="county-filter">
+                <option value="">All counties</option>
+                <option value="Kisii">Kisii</option>
+                <option value="Nyamira">Nyamira</option>
+                <option value="Homa Bay">Homa Bay</option>
+              </select>
+            </div>
+            <div class="filter-item">
+              <label for="species-filter">Species</label>
+              <select id="species-filter">
+                <option value="">All species</option>
+                <option value="Tilapia">Tilapia</option>
+                <option value="Catfish">Catfish</option>
+                <option value="Trout">Trout</option>
+                <option value="Ornamental fish">Ornamental fish</option>
+              </select>
+            </div>
+            <div class="filter-item">
+              <label for="culture-filter">Culture System</label>
+              <select id="culture-filter">
+                <option value="">All systems</option>
+                <option value="Pond">Pond</option>
+                <option value="Tank">Tank</option>
+                <option value="Cage">Cage</option>
+                <option value="Recirculating system">Recirculating system</option>
+              </select>
+            </div>
+            <div class="filter-item">
+              <label for="scale-filter">Production Scale</label>
+              <select id="scale-filter">
+                <option value="">All scales</option>
+                <option value="Small">Small</option>
+                <option value="Medium">Medium</option>
+                <option value="Large">Large</option>
+              </select>
+            </div>
+            <div class="filter-item">
+              <label for="status-filter">Approval Status</label>
+              <select id="status-filter">
+                <option value="all">All statuses</option>
+                <option value="approved">Approved</option>
+                <option value="pending">Pending approval</option>
+              </select>
+            </div>
+            <div class="filter-item">
+              <label for="date-filter">Registration Date</label>
+              <select id="date-filter">
+                <option value="">Anytime</option>
+                <option value="today">Today</option>
+                <option value="this-month">This month</option>
+                <option value="this-year">This year</option>
+              </select>
+            </div>
+            <div class="filter-item filter-search full-width">
+              <label for="search-filter">Search farmers</label>
+              <input id="search-filter" type="search" placeholder="Search by name, species, county, or culture system" />
+            </div>
+          </div>
+          <div class="filter-actions">
+            <button id="clear-filter" type="button" class="secondary-button">Reset filters</button>
+            <button id="export-data" type="button" class="secondary-button">Download farmer data</button>
+          </div>
+          <ul id="farmer-list"></ul>
+          <div class="section-actions">
+            <button type="button" class="secondary-button prev-tab-btn" data-prev="register-tab">Back to Register</button>
+            <button type="button" class="secondary-button next-tab-btn" data-next="farmer-dashboard-tab">Go to My Farm</button>
+          </div>
+        </div>
+
+        <div class="card detail-panel">
+          <h2>Farmer details</h2>
+          <div id="detail-content">
+            <p>Select a farmer from the list or map to view details, approve the registration, and see uploaded images.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="supplier-marketplace-tab" class="tab-panel">
+        <div class="card">
+          <h2>Supplier Marketplace</h2>
+          <p>Browse verified suppliers for fingerlings, feeds, equipment, and harvest fish by county, category, species, distance, and price.</p>
+          <div class="supplier-top-actions">
+            <button id="open-supplier-register" class="secondary-button">Register as Supplier</button>
+          </div>
+          <div class="filter-grid">
+            <div class="filter-item">
+              <label for="supplier-category-filter">Category</label>
+              <select id="supplier-category-filter">
+                <option value="">All categories</option>
+                <option value="Fingerlings">Fingerlings</option>
+                <option value="Feeds">Feeds</option>
+                <option value="Equipment">Equipment</option>
+                <option value="Harvest Fish">Harvest Fish</option>
+              </select>
+            </div>
+            <div class="filter-item">
+              <label for="supplier-species-filter">Species</label>
+              <select id="supplier-species-filter">
+                <option value="">All species</option>
+                <option value="Tilapia">Tilapia</option>
+                <option value="Catfish">Catfish</option>
+                <option value="Ornamental Fish">Ornamental Fish</option>
+                <option value="Mixed">Mixed</option>
+              </select>
+            </div>
+            <div class="filter-item">
+              <label for="supplier-county-filter">County</label>
+              <select id="supplier-county-filter">
+                <option value="">All counties</option>
+                <option value="Kisii">Kisii</option>
+                <option value="Nyamira">Nyamira</option>
+                <option value="Homa Bay">Homa Bay</option>
+              </select>
+            </div>
+            <div class="filter-item">
+              <label for="supplier-price-filter">Price Range</label>
+              <select id="supplier-price-filter">
+                <option value="">Any price</option>
+                <option value="5-10">KES 5–10</option>
+                <option value="10-15">KES 10–15</option>
+                <option value="15-25">KES 15–25</option>
+              </select>
+            </div>
+            <div class="filter-item">
+              <label for="supplier-distance-filter">Distance</label>
+              <select id="supplier-distance-filter">
+                <option value="">Any distance</option>
+                <option value="10">Within 10 km</option>
+                <option value="20">Within 20 km</option>
+                <option value="50">Within 50 km</option>
+              </select>
+            </div>
+            <div class="filter-item filter-search full-width">
+              <label for="supplier-search-filter">Search suppliers</label>
+              <input id="supplier-search-filter" type="search" placeholder="Search by supplier, equipment, or notes" />
+            </div>
+          </div>
+          <div class="supplier-actions-row">
+            <button id="supplier-nearby-btn" type="button" class="secondary-button">Find suppliers near me</button>
+            <span id="supplier-nearby-status" class="hint"></span>
+          </div>
+          <ul id="supplier-list"></ul>
+          <div class="section-actions">
+            <button type="button" class="secondary-button prev-tab-btn" data-prev="farmers-tab">Back to Farmer Directory</button>
+            <button type="button" class="secondary-button next-tab-btn" data-next="farmer-dashboard-tab">Go to My Farm</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="admin-tab" class="tab-panel">
+        <div id="admin-login-section" class="card admin-panel">
+          <h2>Administrator Login</h2>
+          <label for="admin-username">Username</label>
+          <input id="admin-username" type="text" placeholder="Admin username" />
+          <label for="admin-password">Password</label>
+          <input id="admin-password" type="password" placeholder="Admin password" />
+          <div class="admin-actions">
+            <button id="admin-login" type="button" class="primary-button">Login</button>
+          </div>
+          <p id="admin-status" class="hint">Not authenticated</p>
+        </div>
+
+        <div id="admin-dashboard-section" class="hidden">
+          <!-- ADMIN HEADER & LOGOUT -->
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+            <h2>Administrator Dashboard</h2>
+            <div>
+              <span id="admin-welcome" style="font-weight: 600; color: #1976d2; margin-right: 16px;"></span>
+              <button id="admin-logout" type="button" class="secondary-button">Logout</button>
+            </div>
+          </div>
+
+          <div class="card" style="margin-bottom:16px;">
+            <h3>Landing Page Image</h3>
+            <p class="hint">Preview and update the landing page background image shown on the home screen.</p>
+            <div style="display:flex; gap:12px; align-items:center;">
+              <img id="landing-preview" src="/uploads/landing-bg.jpg" alt="Landing preview" style="width:160px; height:100px; object-fit:cover; border-radius:8px; border:1px solid #ddd;">
+              <div style="flex:1;">
+                <input id="landing-image-input" type="file" accept="image/*">
+                <div style="display:flex; gap:8px; margin-top:8px;">
+                  <button id="upload-landing-btn" class="secondary-button" type="button">Upload image</button>
+                  <button id="reset-landing-btn" class="secondary-button" type="button">Reset preview</button>
+                </div>
+                <p id="landing-upload-status" class="hint"></p>
+              </div>
+            </div>
+          </div>
+
+          <!-- ANALYTICS CARDS -->
+          <div class="admin-metrics-grid">
+            <div class="admin-metric-card">
+              <div class="metric-number" id="metric-total">0</div>
+              <div class="metric-label">Total Farmers</div>
+            </div>
+            <div class="admin-metric-card approved">
+              <div class="metric-number" id="metric-approved">0</div>
+              <div class="metric-label">Approved</div>
+            </div>
+            <div class="admin-metric-card pending">
+              <div class="metric-number" id="metric-pending">0</div>
+              <div class="metric-label">Pending Review</div>
+            </div>
+            <div class="admin-metric-card">
+              <div class="metric-number" id="metric-kisii">0</div>
+              <div class="metric-label">Kisii County</div>
+            </div>
+            <div class="admin-metric-card">
+              <div class="metric-number" id="metric-nyamira">0</div>
+              <div class="metric-label">Nyamira County</div>
+            </div>
+            <div class="admin-metric-card">
+              <div class="metric-number" id="metric-homabay">0</div>
+              <div class="metric-label">Homa Bay County</div>
+            </div>
+          </div>
+
+          <!-- STATISTICS SECTION -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin-top: 24px;">
+            <div class="card">
+              <h3>Top Species Farmed</h3>
+              <div id="top-species-list" style="display: flex; flex-direction: column; gap: 12px;"></div>
+            </div>
+            <div class="card">
+              <h3>Culture Systems</h3>
+              <div id="culture-systems-list" style="display: flex; flex-direction: column; gap: 12px;"></div>
+            </div>
+          </div>
+
+          <!-- FARMER MANAGEMENT TABLE -->
+          <div class="card" style="margin-top: 24px;">
+            <h3>Farmer Management</h3>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 16px;">
+              <div>
+                <label for="admin-county-filter">County</label>
+                <select id="admin-county-filter">
+                  <option value="">All Counties</option>
+                  <option value="Kisii">Kisii</option>
+                  <option value="Nyamira">Nyamira</option>
+                  <option value="Homa Bay">Homa Bay</option>
+                </select>
+              </div>
+              <div>
+                <label for="admin-approval-filter">Status</label>
+                <select id="admin-approval-filter">
+                  <option value="">All</option>
+                  <option value="approved">Approved</option>
+                  <option value="pending">Pending</option>
+                </select>
+              </div>
+              <div>
+                <label for="admin-search-filter">Search</label>
+                <input id="admin-search-filter" type="search" placeholder="Name/Email/Phone" />
+              </div>
+              <div style="align-self: flex-end;">
+                <button id="admin-refresh-table" class="secondary-button">🔄 Refresh</button>
+              </div>
+            </div>
+
+            <div style="overflow-x: auto;">
+              <table id="admin-farmers-table" style="width: 100%; border-collapse: collapse;">
+                <thead>
+                  <tr style="background: #f5f5f5; border-bottom: 2px solid #ddd;">
+                    <th style="padding: 12px; text-align: left;">Name</th>
+                    <th style="padding: 12px; text-align: left;">Email</th>
+                    <th style="padding: 12px; text-align: left;">County</th>
+                    <th style="padding: 12px; text-align: left;">Species</th>
+                    <th style="padding: 12px; text-align: center;">Status</th>
+                    <th style="padding: 12px; text-align: center;">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-farmers-tbody">
+                  <tr><td colspan="6" style="padding: 20px; text-align: center;">Loading farmers...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="section-actions">
+            <button type="button" class="secondary-button prev-tab-btn" data-prev="farmer-dashboard-tab">Back to My Farm</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="farmer-dashboard-tab" class="tab-panel">
+        <div class="card farmer-dashboard-panel">
+          <h2>My Farm Dashboard</h2>
+          <div id="farmer-dashboard-content">
+            <p>Loading your farm profile...</p>
+          </div>
+          <div class="section-actions">
+            <button type="button" class="secondary-button prev-tab-btn" data-prev="farmers-tab">Back to Farmer Directory</button>
+            <button type="button" class="secondary-button next-tab-btn" data-next="admin-tab">Proceed to Admin</button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- FARMER LOGIN/REGISTER MODAL -->
+  <div id="farmer-modal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modal-title">Farmer Login</h2>
+        <button class="modal-close" id="modal-close-btn">×</button>
+      </div>
+      
+      <div id="farmer-auth-tabs">
+        <button class="auth-tab-btn active" data-tab="login">Login</button>
+        <button class="auth-tab-btn" data-tab="register">Register</button>
+      </div>
+
+      <!-- LOGIN FORM -->
+      <div id="login-tab" class="auth-tab-content active">
+        <form id="farmer-login-form">
+          <label for="fmerchant_email">Email</label>
+          <input id="fmerchant_email" name="email" type="email" placeholder="Your email" required />
+          
+          <label for="fmerchant_password">Password</label>
+          <input id="fmerchant_password" name="password" type="password" placeholder="Your password" required />
+          
+          <button type="submit" class="primary-button">Login</button>
+          <p id="farmer-login-status" class="status"></p>
+        </form>
+      </div>
+
+      <!-- REGISTER FORM -->
+      <div id="register-tab" class="auth-tab-content">
+        <form id="farmer-register-form">
+          <label for="freg_name">Full Name</label>
+          <input id="freg_name" name="name" type="text" placeholder="Your name" required />
+          
+          <label for="freg_email">Email</label>
+          <input id="freg_email" name="email" type="email" placeholder="Your email" required />
+          
+          <label for="freg_phone">Phone</label>
+          <input id="freg_phone" name="phone" type="tel" placeholder="Your phone" required />
+          
+          <label for="freg_password">Password</label>
+          <input id="freg_password" name="password" type="password" placeholder="Create a password" required />
+          
+          <label for="freg_county">County</label>
+          <select id="freg_county" name="county" required>
+            <option value="">Select county</option>
+            <option value="Kisii">Kisii</option>
+            <option value="Nyamira">Nyamira</option>
+            <option value="Homa Bay">Homa Bay</option>
+          </select>
+
+          <label for="freg_latitude">Latitude</label>
+          <input id="freg_latitude" name="latitude" type="number" step="0.000001" placeholder="e.g. -0.670" required />
+
+          <label for="freg_longitude">Longitude</label>
+          <input id="freg_longitude" name="longitude" type="number" step="0.000001" placeholder="e.g. 34.770" required />
+
+          <div class="form-group">
+            <label class="form-label">Fish Species Farmed <span class="req">*</span></label>
+            <div class="checkbox-grid" id="freg-speciesGrid">
+              <label class="checkbox-item"><input type="checkbox" name="species" value="Tilapia"> 🐟 Tilapia</label>
+              <label class="checkbox-item"><input type="checkbox" name="species" value="Catfish"> 🐠 Catfish</label>
+              <label class="checkbox-item"><input type="checkbox" name="species" value="Trout"> 🎣 Trout</label>
+              <label class="checkbox-item"><input type="checkbox" name="species" value="Carp"> 🐡 Common Carp</label>
+              <label class="checkbox-item"><input type="checkbox" name="species" value="Nile Perch"> 🦈 Nile Perch</label>
+              <label class="checkbox-item"><input type="checkbox" name="species" value="Mudfish"> Mudfish</label>
+              <label class="checkbox-item"><input type="checkbox" name="species" value="Bass"> 🎏 Bass</label>
+              <label class="checkbox-item"><input type="checkbox" name="species" value="Other"> + Other</label>
+            </div>
+          </div>
+
+          <label for="freg_culture_system">Culture System</label>
+          <select id="freg_culture_system" name="culture_system" required>
+            <option value="">Select culture system</option>
+            <option value="Pond">Pond</option>
+            <option value="Tank">Tank</option>
+            <option value="Cage">Cage</option>
+            <option value="Recirculating system">Recirculating system</option>
+          </select>
+
+          <label for="freg_production_scale">Production Scale</label>
+          <select id="freg_production_scale" name="production_scale">
+            <option value="">Select scale (optional)</option>
+            <option value="Small">Small</option>
+            <option value="Medium">Medium</option>
+            <option value="Large">Large</option>
+          </select>
+
+          <label for="freg_equipment">Equipment</label>
+          <input id="freg_equipment" name="equipment" type="text" placeholder="Equipment details" />
+
+          <label for="freg_image">Farm Image</label>
+          <input id="freg_image" name="image" type="file" accept="image/*" />
+
+          <button type="submit" class="primary-button">Register Farm</button>
+          <p id="farmer-register-status" class="status"></p>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Supplier registration modal -->
+  <div id="supplier-modal" class="modal-overlay hidden">
+    <div class="modal">
+      <button id="supplier-modal-close" class="modal-close">×</button>
+      <h3>Register as Supplier</h3>
+      <form id="supplier-register-form" class="supplier-form">
+        <div class="form-row"><label>Farm name<input name="farm_name" required></label></div>
+        <div class="form-row"><label>Owner name<input name="owner_name" required></label></div>
+        <div class="form-row"><label>Phone<input name="phone" required></label></div>
+        <div class="form-row"><label>County<input name="county" required></label></div>
+        <div class="form-row small-grid"><label>Latitude<input name="latitude" placeholder="e.g. -0.123"></label><label>Longitude<input name="longitude" placeholder="e.g. 36.789"></label></div>
+        <div class="form-row"><label>Species (comma separated)<input name="species" placeholder="Tilapia,Catfish" required></label></div>
+        <div class="form-row"><label>Category<select name="category"><option value="fingerlings">Fingerlings</option><option value="equipment">Equipment</option><option value="feed">Feed</option><option value="other">Other</option></select></label></div>
+        <div class="form-row small-grid"><label>Quantity<input name="quantity" type="number" min="0"></label><label>Price (per unit)<input name="price" type="number" step="0.01" min="0"></label></div>
+        <div class="form-row actions-row"><button type="button" id="supplier-locate-me" class="secondary-button">Use my location</button><button type="submit" class="primary-button">Submit Registration</button></div>
+        <p id="supplier-modal-status" class="status"></p>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
+

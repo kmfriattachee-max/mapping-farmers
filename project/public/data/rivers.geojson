@@ -1,0 +1,1 @@
+{ "type": "FeatureCollection", "features": [ { "type": "Feature","properties": { "name": "River Demo" },"geometry": { "type": "LineString", "coordinates": [[34.81,-0.72],[34.82,-0.71],[34.83,-0.70]] } } ] }

@@ -1,0 +1,33 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "AquaTech Equipment",
+        "vendor": "AquaTech Supplies",
+        "products": "Aerators, Pumps, Nets, Water Test Kits",
+        "phone": "+254701234567",
+        "verified": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [34.8235, -0.7082]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "PondPro Gear",
+        "vendor": "PondPro Traders",
+        "products": "Feeders, Tanks, Nets, Filtration Kits",
+        "phone": "+254712345678",
+        "verified": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [34.8280, -0.7027]
+      }
+    }
+  ]
+}

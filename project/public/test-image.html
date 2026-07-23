@@ -1,0 +1,16 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Test Image</title></head>
+<body style="margin:0;display:flex;align-items:center;justify-content:center;height:100vh;background:#222;color:#fff">
+  <div style="text-align:center">
+    <h2>Landing image test</h2>
+    <img id="test-img" src="/uploads/landing-bg.jpg" alt="landing" style="max-width:90vw;max-height:80vh;display:block;margin:12px auto;border:4px solid #fff;"/>
+    <p id="info"></p>
+    <script>
+      const img = document.getElementById('test-img');
+      img.onerror = () => document.getElementById('info').textContent = 'Image failed to load (browser).';
+      img.onload = () => document.getElementById('info').textContent = 'Image loaded successfully.';
+    </script>
+  </div>
+</body>
+</html>

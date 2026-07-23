@@ -1,0 +1,1 @@
+{ "type": "FeatureCollection", "features": [ { "type": "Feature", "properties": { "name": "Water Source 1" }, "geometry": { "type": "Point", "coordinates": [34.818, -0.712] } } ] }

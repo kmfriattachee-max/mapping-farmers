@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KMFRI Fish Farmers Map</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.4/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.4/dist/MarkerCluster.Default.css" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <aside id="sidebar" class="sidebar collapsed" aria-hidden="false">
+    <button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle navigation">☰</button>
+    <nav class="sidebar-nav">
+      <a class="side-link" data-target="#home" href="#home">Home</a>
+      <a class="side-link" data-target="#about" href="#about">About</a>
+      <a class="side-link" data-target="/login" href="/login">Explore Map</a>
+      <a class="side-link" data-target="#contact" href="#contact">Contact</a>
+      <a class="side-link" data-target="/login" href="/login">Login / Register</a>
+    </nav>
+  </aside>
+  <header class="landing-header">
+    <div class="header-inner">
+      <div class="brand-row">
+        <div class="brand-logo">
+          <img src="/uploads/kmfri-logo.svg" alt="KMFRI logo" />
+        </div>
+        <div>
+          <p class="eyebrow">KMFRI Smart Aquaculture Decision Support</p>
+          <h1>Smart Aquaculture GIS Decision Support System</h1>
+          <p class="header-copy">Mapping fish farmers across Kisii, Nyamira &amp; Homa Bay counties with a live SAQDSS preview that prepares KMFRI for smarter aquaculture decisions.</p>
+        </div>
+      </div>
+      <nav class="landing-nav" aria-label="Primary landing navigation">
+        <a class="side-link" href="#home">Home</a>
+        <a class="side-link" href="#about">About</a>
+        <a class="side-link" href="/login">Explore Map</a>
+        <a class="side-link" href="#contact">Contact</a>
+        <a class="secondary-button" href="/login">Login</a>
+        <a class="primary-button" href="/login">Register</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section id="home" class="landing-screen">
+      <div id="compact-badge" class="compact-badge" title="Landing is compact. Click to expand">Compact mode — Expand</div>
+      <div class="hero">
+        <div class="hero-copy">
+          <h1>Smart Aquaculture GIS Platform</h1>
+          <p class="hero-sub">Mapping fish farmers across Kisii, Nyamira &amp; Homa Bay counties with secure GIS tools for authorised users.</p>
+          <div class="hero-ctas">
+            <a id="hero-explore" class="secondary-button" href="/login"><span class="cta-icon icon-gis" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 6l6-2 6 2 6-2v12l-6 2-6-2-6 2V6zm6 0v12l4 1.33V7.33L10 6zm-6 2.09 4-1.33v12.44L4 16.09V8.09zm16 10.82 4-1.33V5.76l-4 1.33v11.82z"/></svg></span>Explore Interactive Map</a>
+            <a id="hero-register" class="primary-button" href="/login"><span class="cta-icon icon-farm" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 2a4 4 0 1 1 0 8 4 4 0 0 1 0-8zm-6 13c0-3.33 2.67-6 6-6s6 2.67 6 6v3H6v-3z"/></svg></span>Register as a Farmer</a>
+          </div>
+        </div>
+        <div class="hero-media">
+          <img id="hero-photo" src="/uploads/landing-bg.jpg" alt="Fish farmers" />
+        </div>
+      </div>
+
+      <section class="dashboard-preview">
+        <div class="dashboard-preview-copy">
+          <p class="eyebrow">SAQDSS Live Preview</p>
+          <h2>See the Smart Aquaculture GIS Decision Support System in action</h2>
+          <p>Interact with a live dashboard preview, animated counters, and configurable GIS layers before entering the full map experience.</p>
+
+          <div class="live-metrics-grid">
+            <div class="metric-card">
+              <div class="metric-value" id="live-farmers">0</div>
+              <div class="metric-label">Registered Farmers</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-value" id="live-farms">0</div>
+              <div class="metric-label">Active Farms</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-value" id="live-hatcheries">0</div>
+              <div class="metric-label">Hatcheries</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-value" id="live-alerts">0</div>
+              <div class="metric-label">Disease Alerts</div>
+            </div>
+          </div>
+
+          <div class="layer-controls-panel">
+            <div class="layer-panel-head">
+              <span>Layer preview</span>
+              <button id="show-layer-controls" class="secondary-button hidden">Show layers</button>
+            </div>
+            <div id="layer-controls" class="layer-controls">
+              <button type="button" class="layer-toggle active" data-layer="farmers">Farmers</button>
+              <button type="button" class="layer-toggle" data-layer="water_sources">Water sources</button>
+              <button type="button" class="layer-toggle" data-layer="rivers">Rivers</button>
+              <button type="button" class="layer-toggle" data-layer="markets">Markets</button>
+              <button type="button" class="layer-toggle" data-layer="hatcheries">Hatcheries</button>
+              <button type="button" class="layer-toggle" data-layer="feed_suppliers">Feed suppliers</button>
+              <button type="button" class="layer-toggle" data-layer="roads">Roads</button>
+            </div>
+          </div>
+        </div>
+        <div class="dashboard-preview-map">
+          <div class="map-panel">
+            <div class="map-title">Interactive GIS preview</div>
+            <div id="map" class="preview-map"></div>
+          </div>
+          <div class="farm-passport-panel">
+            <div class="farm-passport-header">Digital Farm Passport</div>
+            <div id="detail-content" class="farm-passport-card">
+              <p class="hint">Click a farmer marker on the preview map to open the farm passport.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="stats-section">
+        <div class="stats-grid">
+          <div class="stat-card"><div class="stat-icon icon-farm" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 2a4 4 0 1 1 0 8 4 4 0 0 1 0-8zm-6 13c0-3.33 2.67-6 6-6s6 2.67 6 6v3H6v-3z"/></svg></div><div class="stat-value" id="landing-total-farms">0</div><div class="stat-label">Total Registered Farmers</div></div>
+          <div class="stat-card"><div class="stat-icon icon-fish" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M2 12c0-2.21 1.79-4 4-4h5.5l2-2 2 2H18c2.21 0 4 1.79 4 4s-1.79 4-4 4h-4.5l-2 2-2-2H6c-2.21 0-4-1.79-4-4zm13 1.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/></svg></div><div class="stat-value" id="landing-total-production">0</div><div class="stat-label">Total Fish Production</div></div>
+          <div class="stat-card"><div class="stat-icon icon-counties" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 2L3 6v6c0 5 4 9 9 9s9-4 9-9V6l-9-4zm0 2.18 6 2.67V12c0 3.31-2.69 6-6 6s-6-2.69-6-6V6.85l6-2.67z"/></svg></div><div class="stat-value" id="landing-counties-covered">0</div><div class="stat-label">Counties Covered</div></div>
+          <div class="stat-card"><div class="stat-icon icon-water" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 2.69l-1.45 1.59C7.4 8.14 5 10.9 5 14a7 7 0 0 0 14 0c0-3.1-2.4-5.87-5.55-9.72L12 2.69z"/></svg></div><div class="stat-value" id="landing-water-sources">0</div><div class="stat-label">Water Sources Mapped</div></div>
+          <div class="stat-card"><div class="stat-icon icon-hatchery" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 13h4v7h8v-7h4l-8-6-8 6z"/></svg></div><div class="stat-value" id="landing-hatcheries">0</div><div class="stat-label">Hatcheries Registered</div></div>
+          <div class="stat-card"><div class="stat-icon icon-market" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 7h2l2 8h10l2-8h2v2h-1l-1.5 6H7.5L6 9H5V7zm9 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/></svg></div><div class="stat-value" id="landing-markets">0</div><div class="stat-label">Fish Markets Registered</div></div>
+          <div class="stat-card"><div class="stat-icon icon-feed" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 13h2v3h14v-3h2v5h-2a2 2 0 1 1-4 0H9a2 2 0 1 1-4 0H3v-5zm18-1h-4V8h-6v4H5V6h16v6z"/></svg></div><div class="stat-value" id="landing-feeds">0</div><div class="stat-label">Feed Suppliers</div></div>
+          <div class="stat-card"><div class="stat-icon icon-gis" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 6l6-2 6 2 6-2v12l-6 2-6-2-6 2V6zm6 0v12l4 1.33V7.33L10 6zm-6 2.09 4-1.33v12.44L4 16.09V8.09zm16 10.82 4-1.33V5.76l-4 1.33v11.82z"/></svg></div><div class="stat-value" id="landing-gis-layers">0</div><div class="stat-label">GIS Layers Available</div></div>
+        </div>
+      </div>
+
+      <section id="about" class="overview-section">
+        <div class="card" style="max-width:900px;margin:12px auto;padding:24px;">
+          <h3>What AquaMap does</h3>
+          <p>Centralises fish farm registrationz, water source mapping, and market connections for KMFRI and county partners.</p>
+          <ul>
+            <li>Register and verify farms with GPS locations</li>
+            <li>View farms, water resources and markets on a shared GIS map</li>
+            <li>Support planning with simple spatial insights</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="features-preview">
+        <h3 style="margin-bottom:16px; text-align:center;">Why choose AquaMap</h3>
+        <div class="step-grid" style="max-width:960px; margin:0 auto;">
+          <div class="step-card"><strong>Fast registration</strong><p>Quickly capture farms, species and contact details in one place.</p></div>
+          <div class="step-card"><strong>Clear mapping</strong><p>See farms, water and markets together on the GIS dashboard.</p></div>
+          <div class="step-card"><strong>Trusted support</strong><p>Designed for KMFRI, counties and smallholder fish farmers.</p></div>
+        </div>
+      </section>
+
+      <div style="text-align:center; margin:32px 0;">
+        <a class="primary-button" href="/login">Get Started</a>
+        <a class="secondary-button" href="/login" style="margin-left:12px;">Explore Map</a>
+      </div>
+    </section>
+  </main>
+
+  <footer id="contact" class="landing-footer site-footer">
+    <div class="footer-grid">
+      <div>
+        <h4>About AquaMap Kenya</h4>
+        <p>Smart Aquaculture GIS developed by KMFRI to support farmers and county planning.</p>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <p>Email: kmfrikegat@gmail.com<br>Phone: +254 715 901 646</p>
+      </div>
+      <div>
+        <h4>Resources</h4>
+        <p><a href="#">GIS Resources</a><br><a href="#">Reports</a></p>
+      </div>
+    </div>
+  </footer>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.4/dist/leaflet.markercluster.js"></script>
+  <script src="app.js"></script>
+  <script src="landing.js"></script>
+
+</body>
+</html>
