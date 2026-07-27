@@ -1,0 +1,9 @@
+{
+  "name": "kmfri-root",
+  "private": true,
+  "workspaces": ["project"],
+  "scripts": {
+    "start": "cd project && npm start",
+    "postinstall": "cd project && npm install"
+  }
+}

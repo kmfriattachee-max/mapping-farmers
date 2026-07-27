@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: mapping-farmers
+    env: node
+    plan: free
+    buildCommand: cd project && npm install
+    startCommand: cd project && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+        valueType: STRING
