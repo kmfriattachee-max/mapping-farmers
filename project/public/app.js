@@ -70,8 +70,8 @@ window.addEventListener('unhandledrejection', function (ev) {
   } catch (e) { console.error('unhandledrejection handler failed', e); }
 });
 
-// API base — adjust when backend runs on a different origin
-const API_BASE = 'http://localhost:3000';
+// API base — use same origin in production so Render and static deployments work
+const API_BASE = window.location.origin && window.location.origin !== 'null' ? window.location.origin : '';
 function apiUrl(path) {
   if (!path) return API_BASE;
   if (path.startsWith('http://') || path.startsWith('https://')) return path;

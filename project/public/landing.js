@@ -56,8 +56,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     } catch (e) {}
     if (heroPhoto) {
-      const p = `/uploads/landing-bg.jpg?t=${Date.now()}`;
-      const fallback = `/uploads/landing-bg-fallback.svg?t=${Date.now()}`;
+      const p = `uploads/landing-bg.jpg?t=${Date.now()}`;
+      const fallback = `uploads/landing-bg-fallback.svg?t=${Date.now()}`;
       heroPhoto.src = p;
       heroPhoto.addEventListener('error', () => {
         // try SVG fallback if JPG missing or invalid
@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   } catch (e) { /* ignore */ }
 
   // Fetch farmers (public)
-  const farmers = await fetchJson('http://localhost:3000/api/farmers') || [];
+  const farmers = await fetchJson('/api/farmers') || [];
   setCount('landing-total-farms', farmers.length || 0);
   setCount('live-farmers', farmers.length || 0);
   setCount('live-farms', farmers.length || 0);
